@@ -119,7 +119,6 @@ python client_example.py
 
 - 阅读 [README.md](README.md) 了解更多功能
 - 查看 [DEPLOYMENT.md](DEPLOYMENT.md) 了解详细部署指南
-- 阅读 [TECHNICAL_OVERVIEW.md](TECHNICAL_OVERVIEW.md) 了解技术方案
 
 ---
 
