@@ -20,8 +20,9 @@
 cd /workspace/llmexp
 pip install -r requirements.txt
 ```
-
 ### 2. 启动应用
+部署请参考(#DEPLOYMENT.md)
+### 3. 启动应用
 
 ```bash
 # 方式一：Gradio 界面（推荐）
@@ -34,7 +35,7 @@ pip install -r requirements.txt
 ./start.sh both
 ```
 
-### 3. 访问应用
+### 4. 访问应用
 
 - **Gradio 界面**: http://localhost:7860
 - **FastAPI**: http://localhost:8000
