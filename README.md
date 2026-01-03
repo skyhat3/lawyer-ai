@@ -20,7 +20,7 @@
 cd /workspace/llmexp
 pip install -r requirements.txt
 ```
-详细请参考查看 [DEPLOYMENT.md](DEPLOYMENT.md) 了解详细部署指南
+详细请参考查看 [DEPLOYMENT.md](DEPLOYMENT.md) 了解详细部署指南或[QUICKSTART.md](QUICKSTART.md)快速开始
 ### 2. 启动应用
 
 ```bash
