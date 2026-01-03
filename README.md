@@ -277,7 +277,6 @@ patterns = [
 
 ## 📞 技术支持
 
-- **项目地址**: /workspace/llmexp
 - **LLaMA-Factory**: /workspace/llmexp/LLaMA-Factory
 - **文档**: 本 README.md
 
