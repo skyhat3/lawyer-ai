@@ -1,0 +1,22 @@
+# 律师 AI 大模型应用依赖包
+# 基于 LLaMA-Factory 的基础依赖
+
+# 核心依赖（已包含在 LLaMA-Factory 中）
+torch>=2.4.0
+transformers>=4.49.0
+accelerate>=1.3.0
+peft>=0.14.0
+trl>=0.8.6
+
+# Web 框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+gradio>=4.38.0
+
+# 其他依赖
+pydantic>=2.0.0
+sse-starlette>=2.0.0
+
+# 可选依赖（如果需要更好的性能）
+# vllm>=0.5.0
+# sglang>=0.3.0

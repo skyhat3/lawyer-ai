@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>律师 AI 助手 API 测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .status-dot.online {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .params {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .param-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .param-item label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .param-item input[type="range"] {
+            width: 100%;
+        }
+
+        .param-value {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            box-shadow: none;
+        }
+
+        .response {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .response h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .response-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .law-links {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .law-links h5 {
+            margin-bottom: 10px;
+            color: #1976D2;
+        }
+
+        .law-link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .law-link-item a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .law-link-item a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            border-radius: 8px;
+            color: #c62828;
+        }
+
+        .chat-history {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .user-message {
+            background: #E3F2FD;
+            margin-left: auto;
+            max-width: 70%;
+        }
+
+        .assistant-message {
+            background: #f5f5f5;
+            margin-right: auto;
+            max-width: 70%;
+        }
+
+        .clear-btn {
+            background: #f44336;
+            font-size: 14px;
+            padding: 8px 20px;
+        }
+
+        .clear-btn:hover {
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ 律师 AI 助手</h1>
+            <p>基于 LLaMA-Factory 微调的 Qwen2.5-7B 法律大模型</p>
+        </div>
+
+        <div class="content">
+            <div class="status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">正在检查服务状态...</span>
+            </div>
+
+            <div class="section">
+                <div class="section-title">聊天记录</div>
+                <div class="chat-history" id="chatHistory">
+                    <p style="color: #999; text-align: center; padding: 20px;">暂无对话记录</p>
+                </div>
+                <button class="btn clear-btn" onclick="clearHistory()">清空对话</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">提问</div>
+                <textarea id="question" placeholder="请输入您的法律问题，例如：什么是正当防卫？"></textarea>
+
+                <div class="params">
+                    <div class="param-item">
+                        <label>温度 (Temperature): <span class="param-value" id="tempValue">0.8</span></label>
+                        <input type="range" id="temperature" min="0.1" max="2.0" step="0.1" value="0.8" oninput="document.getElementById('tempValue').textContent = this.value">
+                    </div>
+                    <div class="param-item">
+                        <label>最大长度 (Max Tokens): <span class="param-value" id="tokensValue">512</span></label>
+                        <input type="range" id="maxTokens" min="64" max="1024" step="64" value="512" oninput="document.getElementById('tokensValue').textContent = this.value">
+                    </div>
+                </div>
+
+                <button class="btn" id="sendBtn" onclick="sendMessage()">发送问题</button>
+
+                <div class="response" id="responseArea" style="display: none;">
+                    <h4>AI 回复：</h4>
+                    <div class="response-content" id="responseContent"></div>
+                    <div class="law-links" id="lawLinks" style="display: none;">
+                        <h5>📚 相关法规链接：</h5>
+                        <div id="lawLinksList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">示例问题</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
+                    <button class="btn" style="font-size: 14px; padding: 10px;" onclick="useExample('什么是正当防卫？')">什么是正当防卫？</button>
+                    <button class="btn" style="font-size: 14px; padding: 10px;" onclick="useExample('劳动合同解除的条件是什么？')">劳动合同解除的条件是什么？</button>
+                    <button class="btn" style="font-size: 14px; padding: 10px;" onclick="useExample('请解释一下侵权责任法的基本原则')">侵权责任法基本原则</button>
+                    <button class="btn" style="font-size: 14px; padding: 10px;" onclick="useExample('交通事故中的责任认定有哪些标准？')">交通事故责任认定</button>
+                    <button class="btn" style="font-size: 14px; padding: 10px;" onclick="useExample('刑法中关于故意伤害罪的构成要件是什么？')">故意伤害罪构成要件</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/v1';
+        let chatHistory = [];
+
+        // 检查服务状态
+        async function checkStatus() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+
+                if (data.model_loaded) {
+                    document.getElementById('statusDot').className = 'status-dot online';
+                    document.getElementById('statusText').textContent = '服务正常运行';
+                } else {
+                    document.getElementById('statusDot').className = 'status-dot offline';
+                    document.getElementById('statusText').textContent = '模型未加载';
+                }
+            } catch (error) {
+                document.getElementById('statusDot').className = 'status-dot offline';
+                document.getElementById('statusText').textContent = '服务离线';
+            }
+        }
+
+        // 发送消息
+        async function sendMessage() {
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                alert('请输入问题！');
+                return;
+            }
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = '正在生成回复...';
+
+            const responseArea = document.getElementById('responseArea');
+            const responseContent = document.getElementById('responseContent');
+            responseArea.style.display = 'block';
+            responseContent.innerHTML = '<div class="loading"><div class="spinner"></div><span>AI 正在思考...</span></div>';
+            document.getElementById('lawLinks').style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [...chatHistory, { role: 'user', content: question }],
+                        temperature: parseFloat(document.getElementById('temperature').value),
+                        max_tokens: parseInt(document.getElementById('maxTokens').value),
+                        top_p: 0.9,
+                        enable_law_links: true
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.content) {
+                    // 显示回复
+                    responseContent.textContent = data.content;
+
+                    // 显示法规链接
+                    if (data.law_references && data.law_references.length > 0) {
+                        const lawLinksList = document.getElementById('lawLinksList');
+                        lawLinksList.innerHTML = data.law_references.map(ref =>
+                            `<div class="law-link-item">
+                                <a href="${ref.link}" target="_blank">${ref.text}</a>
+                            </div>`
+                        ).join('');
+                        document.getElementById('lawLinks').style.display = 'block';
+                    }
+
+                    // 添加到历史记录
+                    chatHistory.push({ role: 'user', content: question });
+                    chatHistory.push({ role: 'assistant', content: data.content });
+                    updateChatHistoryDisplay();
+                }
+            } catch (error) {
+                responseContent.innerHTML = `<div class="error">请求失败：${error.message}</div>`;
+            }
+
+            sendBtn.disabled = false;
+            sendBtn.textContent = '发送问题';
+        }
+
+        // 更新聊天记录显示
+        function updateChatHistoryDisplay() {
+            const historyDiv = document.getElementById('chatHistory');
+            if (chatHistory.length === 0) {
+                historyDiv.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">暂无对话记录</p>';
+                return;
+            }
+
+            historyDiv.innerHTML = chatHistory.map(msg =>
+                `<div class="chat-message ${msg.role === 'user' ? 'user-message' : 'assistant-message'}">
+                    <strong>${msg.role === 'user' ? '用户' : 'AI 助手'}：</strong>
+                    ${msg.role === 'assistant' ? msg.content.replace(/\[([^\]]+)\]\(https:\/\/www\.baidu\.com\/s\?wd=[^)]+\)/g, '<a href="$2" target="_blank" style="color: #2196F3;">$1</a>') : msg.content}
+                </div>`
+            ).join('');
+
+            // 滚动到底部
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+        }
+
+        // 清空对话
+        function clearHistory() {
+            if (confirm('确定要清空所有对话记录吗？')) {
+                chatHistory = [];
+                updateChatHistoryDisplay();
+                document.getElementById('responseArea').style.display = 'none';
+                document.getElementById('question').value = '';
+            }
+        }
+
+        // 使用示例问题
+        function useExample(question) {
+            document.getElementById('question').value = question;
+        }
+
+        // 页面加载时检查状态
+        window.onload = function() {
+            checkStatus();
+            setInterval(checkStatus, 30000); // 每30秒检查一次
+        };
+    </script>
+</body>
+</html>

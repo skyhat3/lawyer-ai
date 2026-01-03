@@ -1,0 +1,16 @@
+current_model: qwen-1.5b
+models:
+  qwen-1.5b:
+    adapter_name_or_path: /workspace/llmexp/saves/qwen2.5-1.5b_lawyer/lora/sft
+    description: 基于 Qwen2.5-1.5B 微调的法律大模型（速度更快）
+    finetuning_type: lora
+    model_name_or_path: /workspace/llmexp/LLaMA-Factory/Qwen/Qwen2.5-1.5B-Instruct
+    name: Qwen2.5-1.5B-Lawyer
+    template: Qwen
+  qwen-7b:
+    adapter_name_or_path: /workspace/llmexp/saves/qwen2.5-7b_lawyer/lora/sft
+    description: 基于 Qwen2.5-7B 微调的法律大模型（性能更强）
+    finetuning_type: lora
+    model_name_or_path: /workspace/llmexp/LLaMA-Factory/Qwen/Qwen2___5-7B-Instruct
+    name: Qwen2.5-7B-Lawyer
+    template: Qwen
